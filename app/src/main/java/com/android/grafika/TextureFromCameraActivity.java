@@ -147,6 +147,10 @@ public class TextureFromCameraActivity extends Activity implements SurfaceHolder
         Log.d(TAG, "onResume BEGIN");
         super.onResume();
 
+        if (!PermissionHelper.hasCameraPermission(this)) {
+            PermissionHelper.requestCameraPermission(this, false);
+            return;
+        }
         mRenderThread = new RenderThread(mHandler);
         mRenderThread.setName("TexFromCam Render");
         mRenderThread.start();
@@ -171,6 +175,9 @@ public class TextureFromCameraActivity extends Activity implements SurfaceHolder
         Log.d(TAG, "onPause BEGIN");
         super.onPause();
 
+        if (mRenderThread == null) {
+            return;
+        }
         RenderHandler rh = mRenderThread.getHandler();
         rh.sendShutdown();
         try {
